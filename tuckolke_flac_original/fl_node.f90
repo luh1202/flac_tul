@@ -372,8 +372,6 @@ do i = 1,nx
         ! VELOCITIES FROM FORCES
         if( ncod(j,i,1) .eq. 1 ) then
             vel(j,i,1) = bc(j,i,1)
-!       if(j.eq.30) vel(j,i,1) =0. 
-!        write(*,*) i,j,vel(j,i,1)
         else
             vel(j,i,1) = vel(j,i,1) + dt*force(j,i,1)/(amass(j,i)*drat*drat)
         endif

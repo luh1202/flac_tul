@@ -55,7 +55,7 @@ do i = 1,nzony
 end do
 177 continue
 call AdvanceToNextInputLine( 4 )
-read(4,*) npelem			!Surface particles
+!read(4,*) npelem			!Surface particles
 
 ! MECHANICAL CONDITIONS
 call AdvanceToNextInputLine( 4 )
@@ -63,11 +63,11 @@ read(4,*) ynstressbc,ydrsides
 call AdvanceToNextInputLine( 4 )
 read(4,*) nofbc
 call AdvanceToNextInputLine( 4 )
-        do 21 i = 1,nofbc
-        read(iu,*) nofside(i),nbc1(i),nbc2(i),nbc(i),  &
-        bca(i),bcb(i),bcc(i),  &
-        bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)
- 21     continue
+do 21 i = 1,nofbc
+  read(iu,*) nofside(i),nbc1(i),nbc2(i),nbc(i),  &
+             bca(i),bcb(i),bcc(i),  &
+             bcd(i),bce(i),bcf(i),bcg(i),bch(i),bci(i)
+21     continue
 call AdvanceToNextInputLine( 4 )
 ! hydrostatic pressure applied at the bottom
 call AdvanceToNextInputLine( 4 )

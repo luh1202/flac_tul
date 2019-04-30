@@ -22,11 +22,13 @@ else
         read( 1, *, end=10 ) nrec
     end do
     5 continue
-    open (1,file='_contents.0')
+    open (1,file='_contents.0',position='append')
     nrec = 0
     10 continue
     nrec = nrec + 1
+    backspace(1)
 endif
+!rewind( 1 )
 write( 1, '(i4,1x,i8,1x,f6.2)' ) nrec, nloop, time/sec_year/1.e6
 close(1)
 
@@ -53,17 +55,29 @@ deallocate( Dn2 )
 allocate( Dn2(nz,nx,2) )
 
 nwords = nz*nx*2
-! Velocities in [cm/year]
-Dn2(1:nz,1:nx,1:2) = vel(1:nz,1:nx,1:2) * sec_year*100
-open (1,file='Nv.0',access='direct',recl=nwords*kindr) 
-write (1,rec=nrec) Dn2
-close (1)
 
 ! Forces
 Dn2(1:nz,1:nx,1:2) = force(1:nz,1:nx,1:2)
 open (1,file='Nf.0',access='direct',recl=nwords*kindr) 
 write (1,rec=nrec) Dn2
 close (1)
+
+! Velocities in [cm/year]
+if( io_vel.eq.1  ) then
+    Dn2(1:nz,1:nx,1:2) = real(vel(1:nz,1:nx,1:2) * sec_year * 100)
+    open (1,file='vel.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) Dn2
+    close (1)
+endif
+
+! Temperature in [Celsius]
+if( io_temp.eq.1  ) then
+    nwords = nz*nx
+    Dn2(1:nz,1:nx,1) = real(temp(1:nz,1:nx))
+    open (1,file='temperature.0',access='direct',recl=nwords*kindr)
+    write (1,rec=nrec) Dn2(1:nz,1:nx,1)
+    close (1)
+endif
 
 deallocate( Dn2 )
 
@@ -75,28 +89,28 @@ allocate( De(nz-1,nx-1) )
 
 nwords = (nz-1)*(nx-1)
 
-! Velocities in [cm/year]
-if( io_vel.eq.1 ) then
-    do i = 1, nx-1
-        do j = 1, nz-1
-            De(j,i) = 0.25*( vel(j,i,1)+vel(j+1,i,1)+vel(j,i+1,1)+vel(j+1,i+1,1) ) * sec_year*100
-!            De(j,i) = 0.25*( force(j,i,1)+force(j+1,i,1)+force(j,i+1,1)+force(j+1,i+1,1) )
-        end do
-    end do
-    open (1,file='vx.0',access='direct',recl=nwords*kindr) 
-    write (1,rec=nrec) De
-    close (1)
-
-    do i = 1, nx-1
-        do j = 1, nz-1
-            De(j,i) = 0.25*( vel(j,i,2)+vel(j+1,i,2)+vel(j,i+1,2)+vel(j+1,i+1,2) ) * sec_year*100
-!            De(j,i) = 0.25*( force(j,i,2)+force(j+1,i,2)+force(j,i+1,2)+force(j+1,i+1,2) )
-        end do
-    end do
-    open (1,file='vz.0',access='direct',recl=nwords*kindr) 
-    write (1,rec=nrec) De
-    close (1)
-endif
+!! Velocities in [cm/year]
+!if( io_vel.eq.1 ) then
+!    do i = 1, nx-1
+!        do j = 1, nz-1
+!            De(j,i) = 0.25*( vel(j,i,1)+vel(j+1,i,1)+vel(j,i+1,1)+vel(j+1,i+1,1) ) * sec_year*100
+!!            De(j,i) = 0.25*( force(j,i,1)+force(j+1,i,1)+force(j,i+1,1)+force(j+1,i+1,1) )
+!        end do
+!    end do
+!    open (1,file='vx.0',access='direct',recl=nwords*kindr) 
+!    write (1,rec=nrec) De
+!    close (1)
+!
+!    do i = 1, nx-1
+!        do j = 1, nz-1
+!            De(j,i) = 0.25*( vel(j,i,2)+vel(j+1,i,2)+vel(j,i+1,2)+vel(j+1,i+1,2) ) * sec_year*100
+!!            De(j,i) = 0.25*( force(j,i,2)+force(j+1,i,2)+force(j,i+1,2)+force(j+1,i+1,2) )
+!        end do
+!    end do
+!    open (1,file='vz.0',access='direct',recl=nwords*kindr) 
+!    write (1,rec=nrec) De
+!    close (1)
+!endif
 
 
 ! Strain rate II
@@ -227,17 +241,17 @@ if( io_pres.eq.1 ) then
 endif
 
 
-! Temperature
-if( io_temp.eq.1 ) then
-    do i = 1, nx-1
-        do j = 1, nz-1
-            De(j,i) = 0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) )
-        end do
-    end do
-    open (1,file='temp.0',access='direct',recl=nwords*kindr) 
-    write (1,rec=nrec) De
-    close (1)
-endif
+!! Temperature
+!if( io_temp.eq.1 ) then
+!    do i = 1, nx-1
+!        do j = 1, nz-1
+!            De(j,i) = 0.25*( temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1) )
+!        end do
+!    end do
+!    open (1,file='temp.0',access='direct',recl=nwords*kindr) 
+!    write (1,rec=nrec) De
+!    close (1)
+!endif
 
 
 ! Phases

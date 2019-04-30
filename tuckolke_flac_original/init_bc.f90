@@ -52,10 +52,10 @@
          if(nbc(i).eq.nbc(i-1).and.nofside(i).eq.nofside(i-1)) then  
 !           ndbc1 = ndbc				!G.Ito removed 3/17/06
 !           ndbc = (ndbc)+nbc2(i) - nbc1(i) + 1
-	    if (nbc(i).gt.10.and.nofside(i).ne.1) then
-       	      write(*,*) 'Mixed b.c. only implemented for velocity on left side:  G. Ito 3/17/06'
-	      stop
-	    endif
+	       if (nbc(i).gt.10.and.nofside(i).ne.1) then
+       	    write(*,*) 'Mixed b.c. only implemented for velocity on left side:  G. Ito 3/17/06'
+	        stop
+	       endif
          else
            ndbc = nbc2(i) - nbc1(i) +1
          endif
@@ -300,13 +300,13 @@
        jj1 = 1 
        endif 
 ! - x component 
-             if (nbc(i) .eq. 10 ) then  
-       ncod(jj1,ii1,1) = 1
+       if (nbc(i) .eq. 10 ) then  
+           ncod(jj1,ii1,1) = 1
 !       if (abs(bc(jj1,ii1,1)).gt.0.) then  !G.Ito removed 3/17/06
 !        fun = bc(jj1,ii1,1)
 !       endif  
-       bc(jj1,ii1,1) = fun  
-             endif 
+           bc(jj1,ii1,1) = fun  
+       endif 
  
 ! - z component
              if (nbc(i) .eq. 1 ) then
