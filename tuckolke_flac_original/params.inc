@@ -10,7 +10,7 @@ common /mesh/ x0,z0,rxbo,rzbo,sizez_x(10),sizez_y(10), &
     bcd(20),bce(20),bcf(20),bcg(20),bch(20),bci(20),iph_int, & 
     iynts,tbos, iax1,iay1,ibx1,iby1,icx1,icy1,idx1,idy1
 
-common /particles/ np, npelem  ! G.Ito particles for tracing top 8/07
+!common /particles/ np, npelem  ! G.Ito particles for tracing top 8/07
 
 common /flac_ctrl/ dt_scale,strain_inert,strain_inert0,vbc,amul, &
     ratl,ratu,frac,dtmax_therm,dt_maxwell,fracm,srate0, &

@@ -60,7 +60,7 @@ dtacc_save = 0
 dtacc_remesh = 0
 nrec = 1 
 
-if (npelem.gt.0) call particle_seed		!G.Ito 3/07
+!if (npelem.gt.0) call particle_seed		!G.Ito 3/07
 
 do while( time .lt. time_max )
     nloop = nloop + 1
@@ -106,7 +106,7 @@ do while( time .lt. time_max )
     ! FLAC
     call flac
  
-    if (npelem.gt.0) call particle_move		!G.Ito 3/07
+!    if (npelem.gt.0) call particle_move		!G.Ito 3/07
 
     if( ireset.eq.1 ) ireset = 0
 
