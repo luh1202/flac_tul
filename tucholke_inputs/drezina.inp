@@ -154,7 +154,8 @@ phasedat.inp   ; file with distribution of phase on the 2D grid (phasedat)
 ;ny_inject, ntap, iinj1,iinj2,jinj1,jinj2,xlatheat (J/kg),Tcinj (m), 
 1,           0,     56,    57,    1,     24,     5.e5,          6.e3,   
 ;T_solidus, T_liquidus,  rate_inject (m/s), inj_period, ext_period, inj_count
-1000,         1300,        7.922e-10,          1,            0,        0
+;1000,         1300,        7.922e-10,          1,            0,        0
+1000,         1300,        3.1688e-10,          1,            0,        0
 ;;=================================================================
 ;                       R e m e s h i n g
 ;=================================================================
