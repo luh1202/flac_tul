@@ -57,9 +57,10 @@ do  i = 1,nx-1
         vy4 = vel (j+1,i+1,2)
 
         ! (1) Element A:
+        oldvol = 1./2/area(j,i,1)
         det=((x2*y3-y2*x3)-(x1*y3-y1*x3)+(x1*y2-y1*x2))
-        dvol(j,i,1) = det*area(j,i,1) - 1
         area(j,i,1) = 1./det
+        dvol(j,i,1) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x3-x2)+vx2*(x1-x3)+vx3*(x2-x1) - &
@@ -80,9 +81,10 @@ do  i = 1,nx-1
         strain(j,i,3) = s12 + dw12*(s22-s11)
 
         ! (2) Element B:
+        oldvol = 1./2/area(j,i,2)
         det=((x2*y4-y2*x4)-(x3*y4-y3*x4)+(x3*y2-y3*x2))
-        dvol(j,i,2) = det*area(j,i,2) - 1
         area(j,i,2) = 1./det
+        dvol(j,i,2) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx3*(x4-x2)+vx2*(x3-x4)+vx4*(x2-x3) - &
@@ -95,9 +97,10 @@ do  i = 1,nx-1
         stress0(j,i,3,2) = s12 + dw12*(s22-s11)
 
         ! (3) Element C:
+        oldvol = 1./2/area(j,i,3)
         det=((x2*y4-y2*x4)-(x1*y4-y1*x4)+(x1*y2-y1*x2))
-        dvol(j,i,3) = det*area(j,i,3) - 1
         area(j,i,3) = 1./det
+        dvol(j,i,3) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x4-x2)+vx2*(x1-x4)+vx4*(x2-x1) - &
@@ -110,9 +113,10 @@ do  i = 1,nx-1
         stress0(j,i,3,3) = s12 + dw12*(s22-s11)
 
         ! (4) Element D:
+        oldvol = 1./2/area(j,i,4)
         det=((x4*y3-y4*x3)-(x1*y3-y1*x3)+(x1*y4-y1*x4))
-        dvol(j,i,4) = det*area(j,i,4) - 1
         area(j,i,4) = 1./det
+        dvol(j,i,4) = det/2/oldvol - 1
 
         ! Adjusting stresses due to rotation
         dw12 = 0.5*(vx1*(x3-x4)+vx4*(x1-x3)+vx3*(x4-x1) - &

@@ -9,7 +9,7 @@ include 'arrays.inc'
 
 dimension flux(mnz,mnx,2,2), add_source(mnz,mnx)
 
-heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
+!heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 
 ! real_area = 0.5* (1./area(n,t))
 ! Calculate Fluxes in every triangle
@@ -29,40 +29,37 @@ heat_latent_magma = 4.2d5  ! J/kg, latent heat of freezing magma
 
 
 ntherm = ntherm+1
-
+!temp0 = temp
 !ntherm = ntherm
 ! saving old temperature
 !$DIR PREFER_PARALLEL
-!temp(j,i) = temp0(j,i)
 if (istress_therm.gt.0) temp0(1:nz,1:nx) = temp(1:nz,1:nx)
 
 !temp(1:nz,1:nx) = temp0(1:nz,1:nx)
-!dt_therm = time - time_t
-dt_therm = dt
-!dt_therm = 0
-!if( dt_therm.gt.dtmax_therm ) then
-!    write(*,*) dt_therm,dtmax_therm
-!    call SysMsg('DT_THERM is larger than DTMAX_THERM')
-!    stop 37
-!    return
-!endif
-
+dt_therm = time - time_t
+!dt_therm = dt
+if( dt_therm.gt.dtmax_therm ) then
+   call SysMsg('DT_THERM is larger than DTMAX_THERM')
+   write(*,*) 'dt_therm = ',dt_therm,', dtmax_therm = ',dtmax_therm
+   stop 37
+   return
+endif
 !$OMP Parallel private(i,j,iph,cp_eff,cond_eff,dissip,diff,quad_area, &
 !$OMP                  x1,x2,x3,x4,y1,y2,y3,y4,t1,t2,t3,t4,tmpr, &
 !$OMP                  qs,real_area13,area_n,rhs,temp_ave,zcord_ave)
-!$OMP do
-do i = 1,nx-1
-    j = 1  ! top
-    !iph = iphase(j,i)
-    cp_eff = Eff_cp( j,i )
-
-    ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
-    quad_area = 1./(area(j,i,1)+area(j,i,2))
-
-    temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i  ) * heat_latent_magma / quad_area / cp_eff
-    temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i+1) * heat_latent_magma / quad_area / cp_eff
-end do
-!$OMP end do
+!*$OMP do
+!do i = 1,nx-1
+!    j = 1  ! top
+!    !iph = iphase(j,i)
+!    cp_eff = Eff_cp( j,i )
+!
+!    ! area(j,i) is INVERSE of "real" DOUBLE area (=1./det)
+!    quad_area = 1./(area(j,i,1)+area(j,i,2))
+!
+!    temp(j,i  ) = temp(j,i  ) + andesitic_melt_vol(i  ) * heat_latent_magma / quad_area / cp_eff
+!    temp(j,i+1) = temp(j,i+1) + andesitic_melt_vol(i+1) * heat_latent_magma / quad_area / cp_eff
+!end do
+!*$OMP end do
 
 !$OMP do
 do i = 1,nx-1
@@ -74,21 +71,15 @@ do i = 1,nx-1
 
         cond_eff = Eff_conduct( j,i )
 
-        !!!!!!!!!!!!!begin hydro Hao!!!!!!!!!!
-        temp_ave = 0.25 * (temp(j,i) + temp(j+1,i) + temp(j,i+1) + temp(j+1,i+1))
-        zcord_top = 0.25 * (cord(1,i,2) + cord(2,i,2) + cord(1,i+1,2) + cord(2,i+1,2))
-        zcord_ave = 0.25 * (cord(j,i,2) + cord(j+1,i,2) + cord(j,i+1,2) + cord(j+1,i+1,2))
-        if (temp_ave.lt.600. .and. (zcord_top-zcord_ave).le.7.e3) then
-            cond_eff = fnu * cond_eff
-        end if
-        !!!!!!!!!!!!!!end hydro Hao!!!!!!!!!!!!
-
         ! if shearh-heating flag is true
         if( ishearh.eq.1 .and. itherm.ne.2 ) then
             dissip = shrheat(j,i)
         else
             dissip = 0
         endif
+
+        ! Additional sources - radiogenic and shear heating
+        add_source(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
 
         ! diffusivity
         diff = cond_eff/den(iph)/cp_eff
@@ -108,9 +99,9 @@ do i = 1,nx-1
         t4 = temp (j+1 ,i+1)
 
         ! Additional sources - radiogenic and shear heating
-        tmpr = 0.25*(t1 + t2 + t3 + t4)
+        !tmpr = 0.25*(t1 + t2 + t3 + t4)
         !add_source(j,i) = ( source(j,i) + dissip/den(iph) - 600.*cp_eff*Eff_melt(iph,tmpr)) / cp_eff
-        add_source(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
+        !add_source(j,i) = ( source(j,i) + dissip/den(iph) ) / cp_eff
 
         ! (1) A element:
         flux(j,i,1,1) = -diff * ( t1*(y2-y3)+t2*(y3-y1)+t3*(y1-y2) ) * area(j,i,1)
@@ -262,6 +253,20 @@ do i = 1,nx
             cond_eff = Eff_conduct( nz-1,nx-1 )
         endif
         temp(nz,i) = temp(nz-1,i)  +  bot_bc * ( cord(nz-1,i,2)-cord(nz,i,2) ) / cond_eff
+      elseif( itemp_bc.eq.3) then            !G.Ito
+        if (vel(2,nx,1).eq.0) then
+            write(*,*) 'FL_THERM:  Cannot use itemp_bc=3 with zero side boundary velocities'
+            stop
+        endif
+        diff = conduct(1)/cp(1)/den(1)
+        cdum=dmax1(2*dsqrt(diff*cord(nz,i,1)/vel(2,nx,1)), 1.0e-19)
+        zz=(cord(1,i,2)-cord(nz,i,2))/cdum
+        temp(nz,1)=t_bot-t_bot*erfc(zz)
+!        print *, 't_bot',t_bot
+!        print *, 'cdum',cdum
+!        print *, 'zz',zz
+!        print *, 'diff',diff
+!        print *, 'temp(nz,1)',temp(nz,1)
     endif
 
 end do
@@ -274,7 +279,6 @@ end do
 do j = 1,nz
     temp(j ,1)  = temp(j,2)
     temp(j, nx) = temp(j,nx-1)
-
 end do
 !$OMP end do
 !$OMP end parallel

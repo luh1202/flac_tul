@@ -254,7 +254,7 @@ read(4,*) ny_inject, dike_depth, nelem_inject, rate_inject_brittle, rate_inject_
 call AdvanceToNextInputLine( 4 )
 read(4,*)rate_inject_ductile_e, rate_inject_ductile_s
 call AdvanceToNextInputLine( 4 )
-read(4,*) iinj1, iinj2, jinj1, jinj2, xlatheat, ratfac, fnu, Tsol, Tliq
+read(4,*) iinj1, iinj2, jinj1, jinj2, xlatheat, ratfac, fnu, Tsol, Tliq, Tcinj,xmaxdepth,xmaxt,xmaxstr,xenhc1,xenhc2
 call AdvanceToNextInputLine( 4 ) ! add to the last line of the input file and param.inc
 !it=1 time-independent it=2 time-dependent; y = fa*sine(2pi/fb*time)+fc
 !ip=1 turn on the hydromineral lame change; ip=2 turn off
@@ -361,13 +361,13 @@ return
 end
 
 
-subroutine ReadMoreParams()
-
-call ReadIntrusions()  ! - see user_ab.f90
-
-call ReadHydro()       ! - see user_luc.f90
-
-!call ReadHeatinject()    ! - see user_Lu.f90 (6/28/18)!
-return
-end
+!subroutine ReadMoreParams()
+!
+!call ReadIntrusions()  ! - see user_ab.f90
+!
+!call ReadHydro()       ! - see user_luc.f90
+!
+!!call ReadHeatinject()    ! - see user_Lu.f90 (6/28/18)!
+!return
+!end
 

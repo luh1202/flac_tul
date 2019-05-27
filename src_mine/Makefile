@@ -178,9 +178,7 @@ SRCS =	\
 	rsflac.f90 \
 	saveflac.f90 \
 	setflac.f90 \
-	user_ab.f90 \
-	user_luc.f90 \
-	user_lu.f90
+	user_ab.f90 
 MODULES = $(MODULE_SRCS:.f90=.mod)
 MODULE_OBJS = $(MODULE_SRCS:.f90=.o)
 OBJS = $(SRCS:.f90=.o)

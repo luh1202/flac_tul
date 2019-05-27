@@ -6,7 +6,7 @@ common /mesh/ x0,z0,rxbo,rzbo,sizez_x(10),sizez_y(10), &
      velbc_l,velbc_r,nx,nz,nq,nzonx,nzony,nelz_x(10),nelz_y(10), &
      ny_rem,mode_rem,ntest_rem,v_min,v_max,ivis_shape,igeotherm,efoldc, &
      g_x0,g_y0c,g_amplitude,g_width,ydrsides,ynstressbc, &
-     ny_inject,nelem_inject,dike_depth,rate_inject,fsr,iinj1,iinj2,jinj1,jinj2,xlatheat,ratfac,nmass_update,nopbmax,iinj, &
+     ny_inject,nelem_inject,dike_depth,rate_inject,fsr,iinj1,iinj2,jinj1,jinj2, Tcinj,xlatheat,ratfac,nmass_update,nopbmax,iinj, &
      inj_period, ext_period, inj_count, &
      nofbc,nofside(20),nbc1(20),nbc2(20),nbc(20), &
      bca(20),bcb(20),bcc(20),dx_init,xReyn,i_rey,iac_rem, &
@@ -18,7 +18,8 @@ common /flac_ctrl/ dt_scale,strain_inert,strain_inert0,vbc,amul,ratl,ratu,frac, 
      dt_elastic,dt_elastic0,demf,boff,mix_strain,mix_stress, &
      ivis_present,n_boff_cutoff,idt_scale,ifreq_imasses,ifreq_rmasses, &
      movegrid,ndim,ifreq_visc,nmtracers
-    
+common /hydroth/ xmaxdepth,xmaxt,xmaxstr,xenhc1,xenhc2
+
 character phasefile*20,tempfile*20,coordfile*20
 common /inout/ dtout_screen,dtout_file,dtsave_file,lastsave,lastout, &
      io_vel,io_srII,io_eII,io_aps,io_sII,io_sxx,io_szz, &

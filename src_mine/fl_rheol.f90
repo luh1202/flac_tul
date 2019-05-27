@@ -11,43 +11,15 @@ dimension depl(4)
 dimension s11p(4),s22p(4),s12p(4),s33p(4),s11v(4),s22v(4),s12v(4),s33v(4)
 logical rh_sel
 pi = 3.1415926
-
+jran = 13
 rh_sel = .true.
 
 !XXX: irh==11, or irh>=11?
 irh=irheol(mphase)
 if(irh.ge.11) call init_visc
 if(iynts.eq.1) call init_temp
-
-! Initial stress boundary condition
-! Accretional Stresses
-!if (ny_inject.gt.0) then
-!sarc1 = 0.
-!sarc2 = 0.
-!if (ny_inject.eq.1) iinj = 1
-!if (ny_inject.eq.2) iinj = nx/2
-!dxinj = 0.
-!!!!!!!!!!!!!!!!!!!!!!!!!!original sarc1&2 determaination part!!!!!!!!!!!!!!!!!!!!!!
-!do jinj = 1,nelem_inject
-!iph=iphase(jinj,iinj)
-!dxinj=dxinj+cord(jinj,iinj+1,1)-cord(jinj,iinj,1)
-!enddo
-!!!!!!!!!!!!!!!!!!!!!!!!!!
-!dxinj = dxinj/nelem_inject
-!!Constants Elastic:
-!poiss = 0.5*rl(iph)/(rl(iph)+rm(iph))
-!young = rm(iph)*2.*(1.+poiss)
-!!Additional Stress:
-!sarc1 = -young/(1.-poiss*poiss)*rate_inject/dxinj*dt
-!sarc2 = sarc1*poiss/(1.-poiss)
-!endif
 !!!!!!!!!!!!!!!!new!!!!!!!!!!!!!!!!!!
 inj_count = inj_count + 1
-!!!!!!!!!!!!!!!ends!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!new!!!!!!!!!!!!!!!
-
-iinj1 = 55
-iinj2 = 57
 
 ninjtop=jinj1
 ninjbot=jinj2
@@ -57,8 +29,8 @@ nelem_inject=jinj2-jinj1+1
 irh_mark = 0
 
 ! max. deviatoric strain and area change of current time step
-curr_devmax = devmax
-curr_dvmax = dvmax
+!curr_devmax = devmax
+!curr_dvmax = dvmax
 
 !$OMP Parallel Private(i,j,k,iph,irh,bulkm,rmu,coh,phi,psi, &
 !$OMP                  stherm,hardn,vis, &
@@ -71,66 +43,34 @@ curr_dvmax = dvmax
 !$OMP firstprivate(irh_mark)
 !$OMP do schedule(guided) reduction(max: curr_devmax, curr_dvmax)
 do 3 i = 1,nx-1 !nx-1 = 120 element number on x direction
-!!!!!!!!!!!!!!!!!!!!new!!!!!!!!!!!!!!!!!!!
-   !rogh = 0. !Reset for pressure calculation [M. Behn April 4, 2006]
-! Calculate ninjbot to be the minimum of ninjbot and the depth to the maximum cutoff temp (Tinj)
-!   jcnt=1
-!   njTinj(1) = ninjbot
-!    do j = 1,nz-1
-!        !dcord = cord(1,i,2) - cord(j+1,i,2)
-!        dcord = cord(j+1,i,2) - cord(1,i,2)
-!         if(dcord.gt.Tcinj) then
-!           njTinj(jcnt) = j
-!           jcnt = jcnt+1
-!         endif
-!    end do
-!    ninjbot = min(ninjbot,njTinj(1))
-!!!!!!!!!!!!!!!!!!new ends!!!!!!!!!!!!!!!!!!!!!
+!print *, 'nx-1 =',nx-1
+   rogh = 0. !Reset for pressure calculation [M. Behn April 4, 2006]
+   ! Calculate ninjbot to be the minimum of ninjbot and the depth to the maximum cutoff temp (Tinj)
+   jcnt=1
+   njTinj(1) = ninjbot
+    do j = 1,nz-1
+        dcord = cord(1,i,2) - cord(j+1,i,2)
+        if(dcord.gt.Tcinj) then
+          njTinj(jcnt) = j
+          jcnt = jcnt+1
+        endif
+    end do
+    !ninjbot = min(ninjbot,njTinj(1))
+    ninjbot = jinj2
     do 3 j = 1,nz-1 !nz-1 = 40 element number on z direction
+!print *, 'nz-1 =',nz-1
         ! iphase (j,i) is number of a phase NOT a rheology
         iph = iphase(j,i)
         irh = irheol(iph)
         zcord_ave = 0.25 * (cord(j,i,2) + cord(j+1,i,2) + cord(j,i+1,2) + cord(j+1,i+1,2))
         temp_ave = 0.25 * (temp(j,i) + temp(j+1,i) + temp(j,i+1) + temp(j+1,i+1))
-!!!!!!!!!!!!!!!!!!!!!!!!!!!new starts!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!        densT = den(iph) * ( 1 - alfa(iph)*temp_ave )
-!        dh1 = cord (j,i  ,2) - cord (j+1,i  ,2)
-!        dh2 = cord (j,i+1,2) - cord (j+1,i+1,2)
-!        dh  = 0.5 * (dh1+dh2)
-!        dPT = densT * g * dh
-!        dP = dPT * ( 1 - beta(iph)*rogh ) / ( 1 + beta(iph)/2*dPT )
-!        press = rogh + 0.5*dP
-!        rogh = rogh + dP
-!!!!!!!!!!!!!!!!!!!!!!!!!!new ends!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         !if (it.eq.1) then
          if (temp_ave.le.600) then
              rate_inject = rate_inject_brittle
          elseif (temp_ave.gt.600) then
              rate_inject = rate_inject_ductile
          endif
-        !endif
-
-        !if (it.eq.2) then
-!         if (temp_ave.le.600) then
-!             rate_inject = rate_inject_brittle
-!         elseif ((temp_ave.gt.600).and.(time .lt. time_max*0.3)) then
-!             rate_inject = rate_inject_ductile
-!
-!         elseif ((temp_ave.gt.600).and.(time .ge. time_max*0.3).and.(time .lt. time_max*0.6)) then
-!             rate_inject = rate_inject_ductile_e
-!
-!         elseif ((temp_ave.gt.600).and.(time .ge. time_max*0.6).and.(time .lt. time_max)) then
-!             rate_inject = rate_inject_ductile_s
-!         endif
-    !nelem_inject = int(dike_depth/(ABS(rzbo/(nz-1))))
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!original starts!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!    if(ny_inject.gt.0 .and. j.le.nelem_inject) then
-!         poiss = 0.5 * rl(iph) / (rl(iph)+rm(iph))
-!         young = rm(iph)*2.*(1. + poiss)
-!         fdum = ratfac*rate_inject*dt/(dxinj*dble(ninj))
-!         sarc1 = -young / (1. - (poiss*poiss)) * fdum
-!         sarc2 = sarc1*poiss/(1. - poiss)
-!    endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!original ends!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!new ends!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -174,7 +114,7 @@ endif
         !endif
         vis = visn(j,i)
         ! Cycle by triangles
-        do  k = 1,4
+        do 4  k = 1,4
             ! Incremental strains
             de11 = strainr(1,k,j,i)*dt
             de22 = strainr(2,k,j,i)*dt
@@ -190,7 +130,7 @@ endif
             s22v(k) = s22p(k)
             s12v(k) = s12p(k)
             s33v(k) = s33p(k)
-        !!            if(abs(sarc11).gt.0.) write(*,*) i,j,sarc11,sarc22
+
                 if (irh.eq.1) then
                 ! elastic
                 call elastic(bulkm,rmu,s11p(k),s22p(k),s33p(k),s12p(k),de11,de22,de12)
@@ -199,7 +139,7 @@ endif
                 stress0(j,i,2,k) = s22p(k)
                 stress0(j,i,3,k) = s12p(k)
                 stress0(j,i,4,k) = s33p(k)
-            !print *,'8'
+
                 elseif (irh.eq.7) then
                 ! viscous
                 call maxwell(bulkm,rmu,vis,s11v(k),s22v(k),s33v(k),s12v(k),de11,de22,de33,de12,dv,&
@@ -210,8 +150,7 @@ endif
                 stress0(j,i,3,k) = s12v(k)
                 stress0(j,i,4,k) = s33v(k)
                 elseif (irh.eq.6) then
-            !elseif (irh.eq.6) then
-                ! plastic
+
                 call plastic(bulkm,rmu,coh,phi,psi,depl(k),ipls,diss,hardn,&
                     s11p(k),s22p(k),s33p(k),s12p(k),&
                     de11,de22,de33,de12,ten_off,ndim,irh_mark)
@@ -221,9 +160,9 @@ endif
                 stress0(j,i,2,k) = s22p(k)
                 stress0(j,i,3,k) = s12p(k)
                 stress0(j,i,4,k) = s33p(k)
-            !print *,'9'
+
              elseif (irh.ge.11) then
-            !elseif (irh.ge.11) then
+
                 ! Mixed rheology (Maxwell or plastic)
                 if( rh_sel ) then !always the case
                 depl(k) = 0.
@@ -255,9 +194,9 @@ endif
                     endif
                 endif
             endif
-            !print *, 'irheol_fl(j,i) =',irheol_fl(j,i) 1 and -1 show up mixed
-        enddo
-        !print *,'10'
+4       continue
+        !enddo
+
         if( irh.ge.11 .AND. rh_sel ) then
             ! deside - elasto-plastic or viscous deformation
             sII_plas = (s11p(1)+s11p(2)+s11p(3)+s11p(4)-s22p(1)-s22p(2)-s22p(3)-s22p(4))**2 &
@@ -275,7 +214,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!starts!!!!!!!!!!!!!!!!!
 
 if((ny_inject.eq.2).and.(inj_count.gt.ext_period)) then
-if((i.gt.iinj1 ).and.(i.le.iinj2).and.(j.le.ninjbot).and.(j.ge.ninjtop)) then
+if((i.ge.iinj1 ).and.(i.le.iinj2).and.(j.le.ninjbot).and.(j.ge.ninjtop)) then
 !if(i.eq.iinj-2) then
 
 ntap = 0
@@ -304,7 +243,7 @@ endif
                     stress0(j,i,4,k) = s33v(k)
 !!!!!!!!!!!!!!!!!!!!!starts!!!!!!!!!!!!!!!!!
 if((ny_inject.eq.2).and.(inj_count.gt.ext_period)) then
-if((i.gt.iinj1 ).and.(i.le.iinj2).and.(j.le.ninjbot).and.(j.ge.ninjtop)) then
+if((i.ge.iinj1 ).and.(i.le.iinj2).and.(j.le.ninjbot).and.(j.ge.ninjtop)) then
 !if(i.eq.iinj-2) then
 
 ntap = 0
@@ -376,8 +315,8 @@ endif
 
 if (inj_count.eq.inj_period+ext_period) inj_count = 0
 
-devmax = max(devmax, curr_devmax)
-dvmax = max(dvmax, curr_dvmax)
+!devmax = max(devmax, curr_devmax)
+!dvmax = max(dvmax, curr_dvmax)
 
 
 return

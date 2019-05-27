@@ -52,23 +52,11 @@ include 'params.inc'
 include 'arrays.inc'
 
 s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s111.txt")
-!write (1,*) "Here are the s111 ", s11
-!close (1)
-!end if
+
 s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s122.txt")
-!write (1,*) "Here are the s122 ", s22
-!close (1)
-!end if
+
 s33 = 0.25 * (stress0(iz,ix,4,1)+stress0(iz,ix,4,2)+stress0(iz,ix,4,3)+stress0(iz,ix,4,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s133.txt")
-!write (1,*) "Here are the s133 ", s33
-!close (1)
-!end if
+
 stressI = (s11+s22+s33)/3
 
 return
@@ -97,77 +85,10 @@ s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(i
 !end if
 s12 = 0.25 * (stress0(iz,ix,3,1)+stress0(iz,ix,3,2)+stress0(iz,ix,3,3)+stress0(iz,ix,3,4))
 s33 = 0.25 * (stress0(iz,ix,4,1)+stress0(iz,ix,4,2)+stress0(iz,ix,4,3)+stress0(iz,ix,4,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s233.txt")
-!write (1,*) "Here are the s233 ", s33
-!close (1)
-!end if
-!if ((iz==2).and.(ix==44)) then
-!open (unit = 1, file = "s111.txt")
-!write (1,*) "Here are the s111 ", s11
-!close (1)
-!open (unit = 1, file = "s122.txt")
-!write (1,*) "Here are the s122 ", s22
-!close (1)
-!open (unit = 1, file = "s133.txt")
-!write (1,*) "Here are the s133 ", s33
-!close (1)
-!end if
 stressII = 0.5 * sqrt((s11-s22)**2 + 4*s12*s12)
-!stressII = sqrt(s11**2 + s22**2 + 2*(s12*s12))
-!stressII = 0.5 * (s11 * s22 - (s12*s12))
 return
 end function stressII
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!debug part to print out stresses!!!!!!!!!!!!!!!!!!
-!function write_stress!(iz,ix)
-!use arrays
-!include 'precision.inc'
-!include 'params.inc'
-!include 'arrays.inc'
-!s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
-!if ((iz==2).and.(ix==44)) then
-!open (unit = 1, file = "s111.txt")
-!write (1,*) "Here are the s111 ", s11
-!close (1)
-!!end if
-!s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
-!!if ((iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s122.txt")
-!write (1,*) "Here are the s122 ", s22
-!close (1)
-!!end if
-!s33 = 0.25 * (stress0(iz,ix,4,1)+stress0(iz,ix,4,2)+stress0(iz,ix,4,3)+stress0(iz,ix,4,4))
-!!if ((iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s133.txt")
-!write (1,*) "Here are the s133 ", s33
-!close (1)
-!end if
-!stressI = (s11+s22+s33)/3
-
-!s11 = 0.25 * (stress0(iz,ix,1,1)+stress0(iz,ix,1,2)+stress0(iz,ix,1,3)+stress0(iz,ix,1,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s211.txt")
-!write (1,*) "Here are the s211 ", s11
-!close (1)
-!end if
-!s22 = 0.25 * (stress0(iz,ix,2,1)+stress0(iz,ix,2,2)+stress0(iz,ix,2,3)+stress0(iz,ix,2,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s222.txt")
-!write (1,*) "Here are the s222 ", s22
-!close (1)
-!end if
-!s12 = 0.25 * (stress0(iz,ix,3,1)+stress0(iz,ix,3,2)+stress0(iz,ix,3,3)+stress0(iz,ix,3,4))
-!s33 = 0.25 * (stress0(iz,ix,4,1)+stress0(iz,ix,4,2)+stress0(iz,ix,4,3)+stress0(iz,ix,4,4))
-!if( (mod(nloop, 100).eq.0 ).and.(iz=2).and.(ix=44)) then
-!open (unit = 1, file = "s233.txt")
-!write (1,*) "Here are the s233 ", s33
-!close (1)
-!end if
-!stressII = 0.5 * sqrt((s11-s22)**2 + 4*s12*s12)
-!return
-!end function write_stress
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!debug ends!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !==================================================
 ! Get the largest eigenvalue and its eigenvector (with its x-component
 ! fixed to 1) of the deviatoric of a symmetric 2x2 matrix

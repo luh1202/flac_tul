@@ -66,24 +66,6 @@ amass = 0
 dtmax_therm = 1.e+28
 dt_maxwell = 1.e+28
 
-!vel_max = 0.
-!do k = 1,2
-!do i = 1,nx
-!do j = 1,nz
-!   vel_max = max(vel_max,abs(vel(j,i,k)))
-!enddo
-!enddo
-!enddo
-!
-!if (idt_scale .eq. 0) then
-!    amass = rmass
-!else
-!    amass = 0
-!end if
-!
-!dtmax_therm = 1.e+28
-!dt_maxwell = 1.e+28
-
 
 
 do 1 i = 1,nx-1
@@ -94,11 +76,7 @@ do 1 i = 1,nx-1
         dens    = den(iph)
         vel_sound = dlmin*frac/dt_elastic  
         rho_inert = pwave/(vel_sound*vel_sound)  
-!        if (i_rey.eq.1.and.vel_max.gt.0.) then
-!            rho_inert2 = (xReyn*v_min)/(vel_max*abs(rzbo))
-!!           write(*,*) rho_inert, rho_inert2,vel_max
-!            if (rho_inert.gt.rho_inert2) rho_inert = rho_inert2
-!        endif
+
         ! Find the inert. density for given geometry, elas_mod and dt_scale
         ! idt_scale = 0 (dt = frac*dx_min * sqrt(dens/pwave) )
         ! idt_scale = 1 (dt is taken from sup.dat: dt = dt_scale)

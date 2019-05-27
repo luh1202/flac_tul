@@ -6,7 +6,7 @@ module arrays
   ! fortran array pointer
   real*8, pointer, save :: cord(:,:,:), temp(:,:), vel(:,:,:), stress0(:,:,:,:), &
        force(:,:,:), balance(:,:,:), amass(:,:), rmass(:,:), &
-        area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
+area(:,:,:), dvol(:,:,:), strain(:,:,:), bc(:,:,:)
 
   integer, pointer, save :: ncod(:,:,:)
 
@@ -33,7 +33,6 @@ contains
     allocate(dvol(nz-1, nx-1, 4))
     allocate(strain(nz-1, nx-1, 3))
     allocate(bc(nz, nx, 2))
-
     allocate(ncod(nz, nx, 2))
 
     allocate(junk2(nz, nx))

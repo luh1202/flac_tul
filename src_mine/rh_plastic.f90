@@ -253,15 +253,11 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
+character*100 msg
 
+data im /259200/, ia /7141/, ic /54773/
 pls_curr = aps(j,i)
 
-!phi = 0
-!coh = 0
-!psi = 0
-!if (i.le.10.or.i.ge.104) then
-!     plstrain(2) = 1.0
-!endif
 ! Strain-Hardening
 hardn = 0
 isoft = 0
@@ -290,6 +286,8 @@ hardn = (cohesion(is+1)-cohesion(is))/(pl2-pl1)
 endif
 end do
 
+
+
 if (phidisp(iph).gt.0.0001) then
 jran = mod (jran*ia+ic, im)
 ran  = float (jran)/float(im)
@@ -303,42 +301,6 @@ ran  = float (jran)/float(im)
 randcoh = cohdisp(iph)*( ran -0.5)
 coh = coha(iph) + randcoh
 endif
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!ends!!!!!!!!!!!!!!!!!!!!
-!do iph = 1, nphase
-!    if(phase_ratio(iph,j,i) .lt. 0.01) cycle
-!
-!    if(pls_curr < plstrain1(iph)) then
-!        ! no weakening yet
-!        f = fric1(iph)
-!        c = cohesion1(iph)
-!        d = dilat1(iph)
-!        h = 0
-!    else if (pls_curr < plstrain2(iph)) then
-!        ! Find current properties from linear interpolation
-!        dpl = (pls_curr - plstrain1(iph)) / (plstrain2(iph) - plstrain1(iph))
-!        f =  fric1(iph) + (fric2(iph) - fric1(iph)) * dpl
-!        d = dilat1(iph) + (dilat2(iph) - dilat1(iph)) * dpl
-!        c = cohesion1(iph) + (cohesion2(iph) - cohesion1(iph)) * dpl
-!        h = (cohesion2(iph) - cohesion1(iph)) / (plstrain2(iph) - plstrain1(iph))
-!    else
-!        ! saturated weakening
-!        f = fric2(iph)
-!        c = cohesion2(iph)
-!        d = dilat2(iph)
-!        h = 0
-!    endif
-!
-!    ! using harmonic mean on friction and cohesion
-!    ! using arithmatic mean on dilation and hardening
-!    phi = phi + phase_ratio(iph,j,i) / f
-!    coh = coh + phase_ratio(iph,j,i) / c
-!    psi = psi + phase_ratio(iph,j,i) * d
-!    hardn = hardn + phase_ratio(iph,j,i) * h
-!!    ha = h
-!enddo
-!
-!phi = 1 / phi
-!coh = 1 / coh
 
 return
 end subroutine pre_plast
