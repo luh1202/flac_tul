@@ -354,7 +354,7 @@ if(incoming_left==1) call sidewalltemp(1,1+idist)
 if(incoming_right==1) call sidewalltemp(nx-idist,nx)
 
 ! AFTER INTERPOLATIONS - RECALCULATE SOME DEPENDENT VARIABLES
-1017 continue
+!1017 continue
 ! Calculation of areas of triangle
 call init_areas
 

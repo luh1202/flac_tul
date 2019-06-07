@@ -15,7 +15,7 @@ real*8, parameter :: c2d3 = 2./3.
 real*8, parameter :: press_add = 0. !4.e7
 real*8 sphi, spsi, anphi, anpsi, amc, e1, e2, x1, ten_max, &
      s11i, s22i, s12i, s33i,s1,s2,s3, sdif, s0, rad, si, sii, psdif, &
-     fs, alams, dep1, dep3, depm, cs2, si2, dc2, dss, sphii, anphii
+     fs, alams, dep1, dep3, depm, cs2, si2, dc2, dss!, sphii, anphii
 integer icase
 
 ! ------------------------------
@@ -253,7 +253,7 @@ use arrays
 include 'precision.inc'
 include 'params.inc'
 include 'arrays.inc'
-character*100 msg
+!character*100 msg
 
 data im /259200/, ia /7141/, ic /54773/
 pls_curr = aps(j,i)
