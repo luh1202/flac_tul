@@ -56,15 +56,15 @@ tmpr = 0.25*(temp(j,i)+temp(j+1,i)+temp(j,i+1)+temp(j+1,i+1))
 yc = 0.5*(cord(1,i,2)+cord(1,i+1,2)) -  &
 0.25*(cord(j,i,2)+cord(j+1,i,2)+cord(j,i+1,2)+cord(j+1,i+1,2))
 
-
+iph = iphase(j,i)
 if(tmpr.ge.Tsol.and.tmpr.le.Tliq.and.yc.le.Tcinj) then            !G.Ito 8/2/06
 Eff_cp = cp(iph) + xlatheat/(Tliq-Tsol)            !G.Ito 8/2/06
 else                                !G.Ito 8/2/06
 Eff_cp = cp(iph)                        !G.Ito 8/2/06
 endif
 
-iph = iphase(j,i)
-Eff_cp = cp(iph)
+!iph = iphase(j,i)
+!Eff_cp = cp(iph)
 
 return
 end function Eff_cp
