@@ -9,7 +9,6 @@ common /markers/ xmpt(2,3,mnz*mnx*2)
 double precision :: shp2(2,3,2)
 
 ! calculate the new paramters for the triangles
-
 !$OMP parallel private(i,j,n,shp2,ba1,ba2,x,y)
 !$OMP do
 do i = 1 , nx-1

@@ -287,7 +287,7 @@ endif
 end do
 
 
-
+iph = iphase(j,i)
 if (phidisp(iph).gt.0.0001) then
 jran = mod (jran*ia+ic, im)
 ran  = float (jran)/float(im)
