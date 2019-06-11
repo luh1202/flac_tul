@@ -134,7 +134,7 @@ do kk = 1, nmarkers !nmarkers = 43200, number of markers in the model
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!mul_phase begin!!!!!!!!!!!!!!!!!!!
 temp_ave = 0.25 * (temp(j,i) + temp(j,i+1) + temp(j+1,i) + temp(j+1,i+1))
 zcord_ave = 0.25 * (cord(j,i,2) + cord(j+1,i,2) + cord(j,i+1,2) + cord(j+1,i+1,2))
-     if( (i .eq. nx/2) .and. (j .le. nelem_inject+1) ) then !nx/2 = (121/2) = 60 (round off by int), nx is the node number in x direction, however,; i loop from 1 to 40, which is the number of element in y direction.
+     if( (i.ge.iinj1).and.(i.le.iinj2) .and. (j .le. jinj2) ) then !nx/2 = (121/2) = 60 (round off by int), nx is the node number in x direction, however,; i loop from 1 to 40, which is the number of element in y direction.
        if ((temp_ave.le.600) .and. (time .lt. time_max*0.1)) then
         mark(kk)%phase = 1
        else if ((temp_ave.le.600) .and. (time .ge. time_max*0.1) .and. (time .lt. time_max*0.2)) then
@@ -158,38 +158,39 @@ zcord_ave = 0.25 * (cord(j,i,2) + cord(j+1,i,2) + cord(j,i+1,2) + cord(j+1,i+1,2
        end if
      end if
 
-     if( (i .eq. nx/2) .and. (j .le. nelem_inject+1) ) then
+     if( (i.ge.iinj1).and.(i.le.iinj2) .and. (j .le. jinj2) ) then
        if ((temp_ave.gt.600) .and. (time .lt. time_max*0.1)) then
         mark(kk)%phase = 1
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.1) .and. (time .lt. time_max*0.2)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.2) .and. (time .lt. time_max*0.3)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
 
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.3) .and. (time .lt. time_max*0.4)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.4) .and. (time .lt. time_max*0.5)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.5) .and. (time .lt. time_max*0.6)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.6) .and. (time .lt. time_max*0.7)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
 
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.7) .and. (time .lt. time_max*0.8)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.8) .and. (time .lt. time_max*0.9)) then
-        mark(kk)%phase = 1
+        mark(kk)%phase = 2
        else if ((temp_ave.gt.600) .and. (time .ge. time_max*0.9) .and. (time .lt. time_max)) then
         mark(kk)%phase = 1
        end if
      end if
 
-!   iph = iphase(j,i)
-!   if ((i .lt. (nx)/2) .and. ( iph .eq. 2) )  then
-!    if (aps(j,i) .ge. 0.1) then
-!      mark(kk)%phase = 3
-!    endif
-!   endif
+   iph = iphase(j,i)
+if  ( iph .eq. 2)   then
+if (j .ge. xmaxdepth) then
+!if (aps(j,i) .ge. 0.1) then
+mark(kk)%phase = 3
+endif
+endif
 !   !if ((j .le. 10) .and. (aps(j,i) .ge. 0.1) .and. ( iph .eq. 3) )  then
 !      mark(kk)%phase = 3
 !    !else if( (i .le. nx) .and. ( iph .eq. 5) )  then
